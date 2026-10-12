@@ -1,12 +1,12 @@
+import { Text, View } from '@/components/Themed';
+import { useColorScheme } from '@/components/useColorScheme';
+import Colors from '@/constants/Colors';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { ResizeMode, Video } from 'expo-av';
+import { useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, Pressable, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Text, View } from '@/components/Themed';
 import { supabase } from '../constants/SupabaseConfig';
-import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Video, ResizeMode } from 'expo-av';
 
 interface Memory {
   id: string;
@@ -16,6 +16,21 @@ interface Memory {
   created_at: string;
 }
 
+interface Friend {
+  id: string;
+  name: string;
+  status: string;
+  initials: string;
+  color: string;
+}
+
+const FRIENDS: Friend[] = [
+  { id: '1', name: 'Ava', status: 'Online', initials: 'A', color: '#8b5cf6' },
+  { id: '2', name: 'Leo', status: 'In a memory', initials: 'L', color: '#f59e0b' },
+  { id: '3', name: 'Mia', status: 'Sharing today', initials: 'M', color: '#10b981' },
+  { id: '4', name: 'Noah', status: 'Away', initials: 'N', color: '#ef4444' },
+];
+
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const dateKey = (date: Date) => `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
 const isVideoUrl = (url?: string | null) => {
@@ -23,6 +38,31 @@ const isVideoUrl = (url?: string | null) => {
   const lower = url.toLowerCase();
   return lower.endsWith('.mp4') || lower.endsWith('.mov') || lower.endsWith('.m4v') || lower.endsWith('.webm') || lower.includes('video');
 };
+
+function FriendsPanel({ colors }: { colors: { text: string; background: string; tint: string; cardBg: string; borderColor: string } }) {
+  return (
+    <View style={[styles.friendsPanel, { borderColor: colors.borderColor, backgroundColor: colors.cardBg }]}>
+      <View style={styles.friendsHeaderRow}>
+        <View style={[styles.friendsIcon, { backgroundColor: `${colors.tint}20` }]}>
+          <FontAwesome name="users" size={16} color={colors.tint} />
+        </View>
+        <Text style={[styles.friendsTitle, { color: colors.text }]}>Friends</Text>
+      </View>
+
+      {FRIENDS.map((friend) => (
+        <View key={friend.id} style={styles.friendRow}>
+          <View style={[styles.avatar, { backgroundColor: friend.color }]}>
+            <Text style={styles.avatarText}>{friend.initials}</Text>
+          </View>
+          <View style={styles.friendCopy}>
+            <Text style={[styles.friendName, { color: colors.text }]}>{friend.name}</Text>
+            <Text style={[styles.friendStatus, { color: colors.text }]}>{friend.status}</Text>
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+}
 
 export default function CalendarScreen() {
   const colorScheme = useColorScheme();
@@ -78,40 +118,44 @@ export default function CalendarScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.calendar, { borderColor: colors.borderColor, backgroundColor: colors.cardBg }]}>
-        <View style={styles.monthHeader}>
-          <Pressable accessibilityLabel="Previous month" onPress={() => changeMonth(-1)} style={styles.monthButton}>
-            <FontAwesome name="chevron-left" size={14} color={colors.tint} />
-          </Pressable>
-          <Text style={[styles.monthTitle, { color: colors.text }]}>
-            {month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
-          </Text>
-          <Pressable accessibilityLabel="Next month" onPress={() => changeMonth(1)} style={styles.monthButton}>
-            <FontAwesome name="chevron-right" size={14} color={colors.tint} />
-          </Pressable>
-        </View>
+      <View style={styles.topRow}>
+        <FriendsPanel colors={colors} />
 
-        <View style={styles.grid}>
-          {WEEKDAYS.map((weekday) => (
-            <Text key={weekday} style={[styles.weekday, { color: colors.text }]}>{weekday}</Text>
-          ))}
-          {days.map((day, index) => {
-            if (day === null) return <View key={`empty-${index}`} style={styles.dayCell} />;
-            const date = new Date(month.getFullYear(), month.getMonth(), day);
-            const isSelected = dateKey(date) === dateKey(selectedDate);
-            const hasMemories = memoriesByDate.has(dateKey(date));
-            return (
-              <Pressable
-                key={day}
-                accessibilityLabel={`${date.toLocaleDateString()}${hasMemories ? ', memories saved' : ''}`}
-                onPress={() => setSelectedDate(date)}
-                style={[styles.dayCell, isSelected && { backgroundColor: colors.tint }]}
-              >
-                <Text style={[styles.dayText, { color: isSelected ? '#ffffff' : colors.text }]}>{day}</Text>
-                {hasMemories && <View style={[styles.memoryDot, { backgroundColor: isSelected ? '#ffffff' : colors.tint }]} />}
-              </Pressable>
-            );
-          })}
+        <View style={[styles.calendar, { borderColor: colors.borderColor, backgroundColor: colors.cardBg }]}>
+          <View style={styles.monthHeader}>
+            <Pressable accessibilityLabel="Previous month" onPress={() => changeMonth(-1)} style={styles.monthButton}>
+              <FontAwesome name="chevron-left" size={14} color={colors.tint} />
+            </Pressable>
+            <Text style={[styles.monthTitle, { color: colors.text }]}>
+              {month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
+            </Text>
+            <Pressable accessibilityLabel="Next month" onPress={() => changeMonth(1)} style={styles.monthButton}>
+              <FontAwesome name="chevron-right" size={14} color={colors.tint} />
+            </Pressable>
+          </View>
+
+          <View style={styles.grid}>
+            {WEEKDAYS.map((weekday) => (
+              <Text key={weekday} style={[styles.weekday, { color: colors.text }]}>{weekday}</Text>
+            ))}
+            {days.map((day, index) => {
+              if (day === null) return <View key={`empty-${index}`} style={styles.dayCell} />;
+              const date = new Date(month.getFullYear(), month.getMonth(), day);
+              const isSelected = dateKey(date) === dateKey(selectedDate);
+              const hasMemories = memoriesByDate.has(dateKey(date));
+              return (
+                <Pressable
+                  key={day}
+                  accessibilityLabel={`${date.toLocaleDateString()}${hasMemories ? ', memories saved' : ''}`}
+                  onPress={() => setSelectedDate(date)}
+                  style={[styles.dayCell, isSelected && { backgroundColor: colors.tint }]}
+                >
+                  <Text style={[styles.dayText, { color: isSelected ? '#ffffff' : colors.text }]}>{day}</Text>
+                  {hasMemories && <View style={[styles.memoryDot, { backgroundColor: isSelected ? '#ffffff' : colors.tint }]} />}
+                </Pressable>
+              );
+            })}
+          </View>
         </View>
       </View>
 
@@ -163,7 +207,18 @@ export default function CalendarScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
-  calendar: { borderWidth: 1, borderRadius: 8, padding: 12 },
+  topRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  friendsPanel: { flex: 1, borderWidth: 1, borderRadius: 8, padding: 12, minWidth: 140, maxWidth: 220 },
+  friendsHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
+  friendsIcon: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  friendsTitle: { fontSize: 18, fontWeight: '700' },
+  friendRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8 },
+  avatar: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', marginRight: 10 },
+  avatarText: { color: '#ffffff', fontSize: 14, fontWeight: '700' },
+  friendCopy: { flex: 1 },
+  friendName: { fontSize: 14, fontWeight: '600' },
+  friendStatus: { fontSize: 12, opacity: 0.7, marginTop: 2 },
+  calendar: { flex: 2, borderWidth: 1, borderRadius: 8, padding: 12 },
   monthHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
   monthButton: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
   monthTitle: { fontSize: 18, fontWeight: '700' },
