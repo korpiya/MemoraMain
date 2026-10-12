@@ -16,21 +16,6 @@ interface Memory {
   created_at: string;
 }
 
-interface Friend {
-  id: string;
-  name: string;
-  status: string;
-  initials: string;
-  color: string;
-}
-
-const FRIENDS: Friend[] = [
-  { id: '1', name: 'Ava', status: 'Online', initials: 'A', color: '#8b5cf6' },
-  { id: '2', name: 'Leo', status: 'In a memory', initials: 'L', color: '#f59e0b' },
-  { id: '3', name: 'Mia', status: 'Sharing today', initials: 'M', color: '#10b981' },
-  { id: '4', name: 'Noah', status: 'Away', initials: 'N', color: '#ef4444' },
-];
-
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const dateKey = (date: Date) => `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
 const isVideoUrl = (url?: string | null) => {
@@ -38,31 +23,6 @@ const isVideoUrl = (url?: string | null) => {
   const lower = url.toLowerCase();
   return lower.endsWith('.mp4') || lower.endsWith('.mov') || lower.endsWith('.m4v') || lower.endsWith('.webm') || lower.includes('video');
 };
-
-function FriendsPanel({ colors }: { colors: { text: string; background: string; tint: string; cardBg: string; borderColor: string } }) {
-  return (
-    <View style={[styles.friendsPanel, { borderColor: colors.borderColor, backgroundColor: colors.cardBg }]}>
-      <View style={styles.friendsHeaderRow}>
-        <View style={[styles.friendsIcon, { backgroundColor: `${colors.tint}20` }]}>
-          <FontAwesome name="users" size={16} color={colors.tint} />
-        </View>
-        <Text style={[styles.friendsTitle, { color: colors.text }]}>Friends</Text>
-      </View>
-
-      {FRIENDS.map((friend) => (
-        <View key={friend.id} style={styles.friendRow}>
-          <View style={[styles.avatar, { backgroundColor: friend.color }]}>
-            <Text style={styles.avatarText}>{friend.initials}</Text>
-          </View>
-          <View style={styles.friendCopy}>
-            <Text style={[styles.friendName, { color: colors.text }]}>{friend.name}</Text>
-            <Text style={[styles.friendStatus, { color: colors.text }]}>{friend.status}</Text>
-          </View>
-        </View>
-      ))}
-    </View>
-  );
-}
 
 export default function CalendarScreen() {
   const colorScheme = useColorScheme();
@@ -118,9 +78,7 @@ export default function CalendarScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.topRow}>
-        <FriendsPanel colors={colors} />
-
+      <View style={styles.calendarWrap}>
         <View style={[styles.calendar, { borderColor: colors.borderColor, backgroundColor: colors.cardBg }]}>
           <View style={styles.monthHeader}>
             <Pressable accessibilityLabel="Previous month" onPress={() => changeMonth(-1)} style={styles.monthButton}>
@@ -207,18 +165,8 @@ export default function CalendarScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
-  topRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
-  friendsPanel: { flex: 1, borderWidth: 1, borderRadius: 8, padding: 12, minWidth: 140, maxWidth: 220 },
-  friendsHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
-  friendsIcon: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  friendsTitle: { fontSize: 18, fontWeight: '700' },
-  friendRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8 },
-  avatar: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', marginRight: 10 },
-  avatarText: { color: '#ffffff', fontSize: 14, fontWeight: '700' },
-  friendCopy: { flex: 1 },
-  friendName: { fontSize: 14, fontWeight: '600' },
-  friendStatus: { fontSize: 12, opacity: 0.7, marginTop: 2 },
-  calendar: { flex: 2, borderWidth: 1, borderRadius: 8, padding: 12 },
+  calendarWrap: { width: '100%' },
+  calendar: { borderWidth: 1, borderRadius: 8, padding: 12 },
   monthHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
   monthButton: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
   monthTitle: { fontSize: 18, fontWeight: '700' },
