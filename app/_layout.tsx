@@ -1,17 +1,17 @@
-import 'react-native-reanimated';
+import { ThemeProvider as AppThemeProvider, useColorScheme } from '@/components/useColorScheme';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
+import * as Linking from 'expo-linking';
 import { Stack, usePathname, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import * as Linking from 'expo-linking';
+import 'react-native-reanimated';
 import { supabase } from '../constants/SupabaseConfig';
-import { ThemeProvider as AppThemeProvider, useColorScheme } from '@/components/useColorScheme';
 
 export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
+    // Catch any errors thrown by the Layout component.
+    ErrorBoundary
 } from 'expo-router';
 
 export const unstable_settings = {
@@ -30,6 +30,7 @@ export const linking = {
       'reset-password': ['reset-password', 'auth/v1/verify'],
       '(tabs)': '(tabs)/*',
       settings: 'settings',
+      friends: 'friends',
       'memory/[id]': 'memory/:id',
       delete: 'delete',
     },
@@ -105,6 +106,7 @@ function RootLayoutNav() {
         <Stack.Screen name="reset-password" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="settings" options={{ headerShown: false }} />
+        <Stack.Screen name="friends" options={{ title: 'Friends' }} />
         <Stack.Screen name="calendar" options={{ title: 'Memora Calendar' }} />
         <Stack.Screen name="memory/[id]" options={{ title: 'Memory Details' }} />
         <Stack.Screen name="delete" options={{ presentation: 'modal' }} />
