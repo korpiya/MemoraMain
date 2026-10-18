@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, ScrollView, TouchableOpacity, Alert, ActivityIndicator, Switch, Linking, Image } from 'react-native';
+import { StyleSheet, ScrollView, TouchableOpacity, Alert, Switch, Linking, Image } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { supabase } from '../../constants/SupabaseConfig';
 import Colors from '@/constants/Colors';
@@ -21,7 +21,6 @@ export default function ProfileScreen() {
   const [user, setUser] = useState<any>(null);
   const [stats, setStats] = useState({ totalMemories: 0, drafts: 0, published: 0 });
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const darkModeEnabled = theme === 'dark';
 
   useEffect(() => {
     if (isFocused) {
@@ -32,25 +31,24 @@ export default function ProfileScreen() {
   async function fetchUserData() {
     try {
       setLoading(true);
-      
-      // Get current user
+
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
 
-      // Get stats for current user only
       if (user) {
-<<<<<<< HEAD
         const { data: profile } = await supabase
           .from('profiles')
           .select('username')
           .eq('id', user.id)
           .maybeSingle();
+
         const username = profile?.username || user.user_metadata?.username;
         if (username) {
           setUser((currentUser: any) => ({
             ...currentUser,
             user_metadata: { ...currentUser?.user_metadata, username },
           }));
+
           if (!profile?.username) {
             const { error: profileError } = await supabase
               .from('profiles')
@@ -63,17 +61,16 @@ export default function ProfileScreen() {
                 },
                 { onConflict: 'id' },
               );
+
             if (profileError) console.warn('Unable to sync profile username:', profileError.message);
           }
         }
 
-=======
->>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
         const { data: userStories } = await supabase
           .from('stories')
           .select('status')
           .eq('author_id', user.id);
-        
+
         if (userStories) {
           setStats({
             totalMemories: userStories.length,
@@ -82,7 +79,6 @@ export default function ProfileScreen() {
           });
         }
       } else {
-        // User not authenticated - reset stats
         setStats({ totalMemories: 0, drafts: 0, published: 0 });
       }
     } catch (error: any) {
@@ -181,101 +177,99 @@ export default function ProfileScreen() {
       style={styles.gradientContainer}
     >
       <ScrollView style={styles.container}>
-      {/* Profile Header */}
-      <View style={[styles.header, { backgroundColor: colors.cardBg, borderBottomColor: colors.borderColor }]}>
-        <View style={[styles.avatar, { backgroundColor: colors.tint }]}>
-          {user?.user_metadata?.avatar_url ? (
-            <Image source={{ uri: user.user_metadata.avatar_url }} style={styles.avatarImage} />
-          ) : (
-            <FontAwesome name="user" size={40} color="#fff" />
+        <View style={[styles.header, { backgroundColor: colors.cardBg, borderBottomColor: colors.borderColor }]}>
+          <View style={[styles.avatar, { backgroundColor: colors.tint }]}>
+            {user?.user_metadata?.avatar_url ? (
+              <Image source={{ uri: user.user_metadata.avatar_url }} style={styles.avatarImage} />
+            ) : (
+              <FontAwesome name="user" size={40} color="#fff" />
+            )}
+          </View>
+          <Text style={[styles.userName, { color: colors.text }]}>
+            {user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || 'User'}
+          </Text>
+          {!!user?.user_metadata?.username && (
+            <Text style={[styles.userEmail, { color: colors.text, opacity: 0.7, alignSelf: 'center' }]}>
+              @{user.user_metadata.username}
+            </Text>
           )}
-        </View>
-        <Text style={[styles.userName, { color: colors.text }]}>
-          {user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || 'User'}
-        </Text>
-<<<<<<< HEAD
-        {!!user?.user_metadata?.username && (
-          <Text style={[styles.userEmail, { color: colors.text, opacity: 0.7, alignSelf: 'center' }]}>@{user.user_metadata.username}</Text>
-        )}
-=======
->>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
-        <Text style={[styles.userEmail, { color: colors.text, opacity: 0.7, alignSelf: 'center' }]}> 
-          Eranians Archive Member
-        </Text>
-      </View>
-      <View style={styles.statsContainer}>
-        <View style={[styles.statCard, { backgroundColor: colors.cardBg, borderColor: colors.borderColor }]}>
-          <Text style={[styles.statNumber, { color: colors.tint }]}>{stats.totalMemories}</Text>
-          <Text style={[styles.statLabel, { color: colors.text }]}>Total Memories</Text>
-        </View>
-        <View style={[styles.statCard, { backgroundColor: colors.cardBg, borderColor: colors.borderColor }]}>
-          <Text style={[styles.statNumber, { color: colors.accent }]}>{stats.drafts}</Text>
-          <Text style={[styles.statLabel, { color: colors.text }]}>Drafts</Text>
-        </View>
-        <View style={[styles.statCard, { backgroundColor: colors.cardBg, borderColor: colors.borderColor }]}>
-          <Text style={[styles.statNumber, { color: colors.success }]}>{stats.published}</Text>
-          <Text style={[styles.statLabel, { color: colors.text }]}>Published</Text>
-        </View>
-      </View>
-
-      {/* Menu Items */}
-      <View style={styles.menuSection}>
-        <View style={[styles.menuItem, { backgroundColor: colors.cardBg, borderColor: colors.borderColor }]}>
-          <FontAwesome name="bell" size={20} color={colors.tint} />
-          <Text style={[styles.menuText, { color: colors.text }]}>Notifications</Text>
-          <Switch
-            value={notificationsEnabled}
-            onValueChange={handleNotificationsToggle}
-            trackColor={{ false: colors.borderColor, true: colors.tint }}
-            thumbColor={notificationsEnabled ? '#fff' : '#f4f3f4'}
-          />
+          <Text style={[styles.userEmail, { color: colors.text, opacity: 0.7, alignSelf: 'center' }]}>
+            Eranians Archive Member
+          </Text>
         </View>
 
-        <TouchableOpacity 
-          onPress={() => router.push('/edit-profile')}
-          style={[styles.menuItem, { backgroundColor: colors.cardBg, borderColor: colors.borderColor }]}>
-          <FontAwesome name="edit" size={20} color={colors.tint} />
-          <Text style={[styles.menuText, { color: colors.text }]}>Edit Profile</Text>
-          <FontAwesome name="chevron-right" size={16} color={colors.borderColor} />
-        </TouchableOpacity>
+        <View style={styles.statsContainer}>
+          <View style={[styles.statCard, { backgroundColor: colors.cardBg, borderColor: colors.borderColor }]}>
+            <Text style={[styles.statNumber, { color: colors.tint }]}>{stats.totalMemories}</Text>
+            <Text style={[styles.statLabel, { color: colors.text }]}>Total Memories</Text>
+          </View>
+          <View style={[styles.statCard, { backgroundColor: colors.cardBg, borderColor: colors.borderColor }]}>
+            <Text style={[styles.statNumber, { color: colors.accent }]}>{stats.drafts}</Text>
+            <Text style={[styles.statLabel, { color: colors.text }]}>Drafts</Text>
+          </View>
+          <View style={[styles.statCard, { backgroundColor: colors.cardBg, borderColor: colors.borderColor }]}>
+            <Text style={[styles.statNumber, { color: colors.success }]}>{stats.published}</Text>
+            <Text style={[styles.statLabel, { color: colors.text }]}>Published</Text>
+          </View>
+        </View>
 
-        <TouchableOpacity 
-          onPress={() => router.push('/settings')}
-          style={[styles.menuItem, { backgroundColor: colors.cardBg, borderColor: colors.borderColor }]}>
-          <FontAwesome name="cog" size={20} color={colors.tint} />
-          <Text style={[styles.menuText, { color: colors.text }]}>Settings</Text>
-          <FontAwesome name="chevron-right" size={16} color={colors.borderColor} />
-        </TouchableOpacity>
+        <View style={styles.menuSection}>
+          <View style={[styles.menuItem, { backgroundColor: colors.cardBg, borderColor: colors.borderColor }]}>
+            <FontAwesome name="bell" size={20} color={colors.tint} />
+            <Text style={[styles.menuText, { color: colors.text }]}>Notifications</Text>
+            <Switch
+              value={notificationsEnabled}
+              onValueChange={handleNotificationsToggle}
+              trackColor={{ false: colors.borderColor, true: colors.tint }}
+              thumbColor={notificationsEnabled ? '#fff' : '#f4f3f4'}
+            />
+          </View>
 
-        <TouchableOpacity 
-          onPress={handleHelpSupport}
-          style={[styles.menuItem, { backgroundColor: colors.cardBg, borderColor: colors.borderColor }]}>
-          <FontAwesome name="question-circle" size={20} color={colors.tint} />
-          <Text style={[styles.menuText, { color: colors.text }]}>Help & Support</Text>
-          <FontAwesome name="chevron-right" size={16} color={colors.borderColor} />
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.push('/edit-profile')}
+            style={[styles.menuItem, { backgroundColor: colors.cardBg, borderColor: colors.borderColor }]}
+          >
+            <FontAwesome name="edit" size={20} color={colors.tint} />
+            <Text style={[styles.menuText, { color: colors.text }]}>Edit Profile</Text>
+            <FontAwesome name="chevron-right" size={16} color={colors.borderColor} />
+          </TouchableOpacity>
 
-        <TouchableOpacity           onPress={handleSwitchAccount}
-          style={[styles.menuItem, { backgroundColor: '#eef2ff', borderColor: '#c7d2fe' }]}> 
-          <FontAwesome name="exchange" size={20} color="#4338ca" />
-          <Text style={[styles.menuText, { color: '#4338ca' }]}>Switch Account</Text>
-          <FontAwesome name="chevron-right" size={16} color="#c7d2fe" />
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.push('/settings')}
+            style={[styles.menuItem, { backgroundColor: colors.cardBg, borderColor: colors.borderColor }]}
+          >
+            <FontAwesome name="cog" size={20} color={colors.tint} />
+            <Text style={[styles.menuText, { color: colors.text }]}>Settings</Text>
+            <FontAwesome name="chevron-right" size={16} color={colors.borderColor} />
+          </TouchableOpacity>
 
-        <TouchableOpacity           onPress={handleLogout}
-          style={[styles.menuItem, styles.logoutItem, { backgroundColor: '#fee2e2', borderColor: '#fecaca' }]}>
-          <FontAwesome name="sign-out" size={20} color="#dc2626" />
-          <Text style={[styles.menuText, { color: '#dc2626' }]}>Logout</Text>
-          <FontAwesome name="chevron-right" size={16} color="#fecaca" />
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            onPress={handleHelpSupport}
+            style={[styles.menuItem, { backgroundColor: colors.cardBg, borderColor: colors.borderColor }]}
+          >
+            <FontAwesome name="question-circle" size={20} color={colors.tint} />
+            <Text style={[styles.menuText, { color: colors.text }]}>Help & Support</Text>
+            <FontAwesome name="chevron-right" size={16} color={colors.borderColor} />
+          </TouchableOpacity>
 
-      {/* Footer */}
-      <View style={styles.footer}>
-        <Text style={[styles.footerText, { color: colors.text, opacity: 0.5 }]}>
-          Memora v1.0
-        </Text>
-      </View>
+          <TouchableOpacity
+            onPress={handleSwitchAccount}
+            style={[styles.menuItem, { backgroundColor: '#eef2ff', borderColor: '#c7d2fe' }]}
+          >
+            <FontAwesome name="exchange" size={20} color="#4338ca" />
+            <Text style={[styles.menuText, { color: '#1f2937' }]}>Switch Account</Text>
+            <FontAwesome name="chevron-right" size={16} color="#4338ca" />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handleLogout}
+            style={[styles.menuItem, { backgroundColor: '#fef2f2', borderColor: '#fecaca' }]}
+          >
+            <FontAwesome name="sign-out" size={20} color="#dc2626" />
+            <Text style={[styles.menuText, { color: '#b91c1c' }]}>Logout</Text>
+            <FontAwesome name="chevron-right" size={16} color="#dc2626" />
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </LinearGradient>
   );
@@ -285,88 +279,73 @@ const styles = StyleSheet.create({
   gradientContainer: { flex: 1 },
   container: { flex: 1 },
   header: {
-    alignItems: 'center',
-    paddingVertical: 32,
+    paddingVertical: 20,
     paddingHorizontal: 20,
+    alignItems: 'center',
     borderBottomWidth: 1,
-    marginBottom: 20,
   },
   avatar: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
+    width: 84,
+    height: 84,
+    borderRadius: 42,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
+    marginBottom: 14,
   },
   avatarImage: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
+    width: 84,
+    height: 84,
+    borderRadius: 42,
   },
   userName: {
     fontSize: 24,
-    fontWeight: '800',
-    marginBottom: 6,
-    letterSpacing: -0.5,
+    fontWeight: '700',
+    marginBottom: 4,
   },
   userEmail: {
     fontSize: 14,
-    fontWeight: '500',
-    textAlign: 'center',
   },
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 15,
-    marginBottom: 32,
-    gap: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
   },
   statCard: {
     flex: 1,
-    padding: 16,
-    borderRadius: 14,
-    alignItems: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    marginHorizontal: 4,
+    borderRadius: 12,
     borderWidth: 1,
+    alignItems: 'center',
   },
   statNumber: {
-    fontSize: 26,
-    fontWeight: '800',
+    fontSize: 24,
+    fontWeight: '700',
     marginBottom: 6,
   },
   statLabel: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: 12,
+    textAlign: 'center',
   },
   menuSection: {
-    paddingHorizontal: 15,
-    gap: 10,
-    marginBottom: 32,
+    paddingHorizontal: 20,
+    paddingBottom: 30,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
-    borderRadius: 14,
-    borderWidth: 1,
-  },
-  logoutItem: {
-    marginTop: 12,
+    marginBottom: 12,
   },
   menuText: {
     flex: 1,
     fontSize: 16,
-    fontWeight: '700',
-    marginLeft: 14,
-    letterSpacing: 0.3,
-  },
-  footer: {
-    alignItems: 'center',
-    paddingVertical: 24,
-  },
-  footerText: {
-    fontSize: 13,
     fontWeight: '600',
+    marginLeft: 12,
   },
 });

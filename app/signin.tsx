@@ -23,10 +23,7 @@ export default function SignInScreen() {
   const { email: selectedEmail } = useLocalSearchParams<{ email?: string }>();
 
   const [email, setEmail] = useState('');
-<<<<<<< HEAD
   const [username, setUsername] = useState('');
-=======
->>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -114,36 +111,28 @@ export default function SignInScreen() {
       return;
     }
 
-<<<<<<< HEAD
     const normalizedUsername = username.trim().toLowerCase();
     if (isRegister && !/^[a-z0-9_]{3,20}$/.test(normalizedUsername)) {
       setMessage('Choose a username with 3-20 letters, numbers, or underscores.');
       return;
     }
 
-=======
->>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
     setLoading(true);
     setMessage('');
     setAwaitingConfirmation(false);
 
     try {
       const authResult = isRegister
-<<<<<<< HEAD
         ? await supabase.auth.signUp({
             email,
             password,
             options: { data: { username: normalizedUsername } },
           })
-=======
-        ? await supabase.auth.signUp({ email, password })
->>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
         : await supabase.auth.signInWithPassword({ email, password });
 
       const { error, data } = authResult;
       if (error) throw error;
 
-<<<<<<< HEAD
       if (data.session && data.user?.user_metadata?.username) {
         const accountUsername = isRegister ? normalizedUsername : data.user.user_metadata.username;
         const { error: profileError } = await supabase
@@ -157,11 +146,10 @@ export default function SignInScreen() {
             },
             { onConflict: 'id' },
           );
+
         if (profileError) throw profileError;
       }
 
-=======
->>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
       if (isRegister) {
         if (data?.session) {
           if (rememberMe) {
@@ -253,191 +241,188 @@ export default function SignInScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-      <View style={styles.inner}>
-        <View style={styles.logoContainer}>
-          <Animated.Image
-            source={require('../assets/images/MemoraLogoNB.png')}
-            style={[styles.logo, animatedLogoStyle as any]}
-            resizeMode="contain"
-          />
-        </View>
-        <Text style={[styles.title, { color: colors.text }]}>Welcome to Memora</Text>
-        <Text style={[styles.subtitle, { color: colors.text, opacity: 0.75 }]}>Dedicated digital preservation and documentation app designed exclusively for the New Era University.</Text>
-
-        <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.borderColor }]}>          
-          <View style={styles.row}>            
-            <TouchableOpacity
-              style={[
-                styles.tabButton,
-                { borderColor: colors.borderColor, backgroundColor: !isRegister ? activeTabBackground : 'transparent' },
-              ]}
-              onPress={() => setIsRegister(false)}
-            >
-              <Text style={[styles.tabText, { color: !isRegister ? '#fff' : colors.text }]}>Login</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.tabButton,
-                { borderColor: colors.borderColor, backgroundColor: isRegister ? activeTabBackground : 'transparent' },
-              ]}
-              onPress={() => setIsRegister(true)}
-            >
-              <Text style={[styles.tabText, { color: isRegister ? '#fff' : colors.text }]}>Register</Text>
-            </TouchableOpacity>
+        <View style={styles.inner}>
+          <View style={styles.logoContainer}>
+            <Animated.Image
+              source={require('../assets/images/MemoraLogoNB.png')}
+              style={[styles.logo, animatedLogoStyle as any]}
+              resizeMode="contain"
+            />
           </View>
+          <Text style={[styles.title, { color: colors.text }]}>Welcome to Memora</Text>
+          <Text style={[styles.subtitle, { color: colors.text, opacity: 0.75 }]}>Dedicated digital preservation and documentation app designed exclusively for the New Era University.</Text>
 
-          <View style={styles.form}>
-            {selectedAccount && !isRegister ? (
-              <View style={[styles.selectedAccount, { backgroundColor: colors.background, borderColor: colors.borderColor }]}>
-                {selectedAccount.avatarUrl ? (
-                  <Image source={{ uri: selectedAccount.avatarUrl }} style={styles.selectedAccountAvatar} />
-                ) : (
-                  <View style={[styles.selectedAccountAvatar, styles.selectedAccountAvatarFallback, { backgroundColor: colors.tint }]}>
-                    <Text style={styles.selectedAccountAvatarText}>{selectedAccount.email.charAt(0).toUpperCase()}</Text>
-                  </View>
-                )}
-                <View style={styles.selectedAccountDetails}>
-                  <Text style={[styles.selectedAccountLabel, { color: colors.text }]}>Continue as</Text>
-                  <Text style={[styles.selectedAccountEmail, { color: colors.text }]} numberOfLines={1}>{selectedAccount.email}</Text>
-                </View>
-                <TouchableOpacity onPress={() => { setSelectedAccount(null); setEmail(''); setPassword(''); }}>
-                  <Text style={[styles.changeAccountText, { color: colors.tint }]}>Change</Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <>
-<<<<<<< HEAD
-                {isRegister ? (
-                  <>
-                    <Text style={[styles.label, { color: colors.text }]}>Username</Text>
-                    <TextInput
-                      style={[styles.input, { backgroundColor: colors.cardBg, color: colors.text, borderColor: colors.borderColor }]}
-                      placeholder="Choose a username"
-                      placeholderTextColor={colors.text + '80'}
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      value={username}
-                      onChangeText={setUsername}
-                    />
-                  </>
-                ) : null}
-=======
->>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
-                <Text style={[styles.label, { color: colors.text }]}>Email address</Text>
-                <TextInput
-                  style={[styles.input, { backgroundColor: colors.cardBg, color: colors.text, borderColor: colors.borderColor }]}
-                  placeholder="you@example.com"
-                  placeholderTextColor={colors.text + '80'}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  value={email}
-                  onChangeText={setEmail}
-                />
-              </>
-            )}
-
-            <Text style={[styles.label, { color: colors.text }]}>Password</Text>
-            <View style={styles.passwordInputContainer}>
-              <TextInput
-                style={[styles.input, styles.passwordInput, { backgroundColor: colors.cardBg, color: colors.text, borderColor: colors.borderColor }]}
-                placeholder="Enter password"
-                placeholderTextColor={colors.text + '80'}
-                secureTextEntry={!showPassword}
-                value={password}
-                onChangeText={setPassword}
-              />
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.borderColor }]}>
+            <View style={styles.row}>
               <TouchableOpacity
-                accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
-                accessibilityRole="button"
-                hitSlop={8}
-                onPress={() => setShowPassword(current => !current)}
-                style={styles.passwordVisibilityButton}
+                style={[
+                  styles.tabButton,
+                  { borderColor: colors.borderColor, backgroundColor: !isRegister ? activeTabBackground : 'transparent' },
+                ]}
+                onPress={() => setIsRegister(false)}
               >
-                <FontAwesome name={showPassword ? 'eye-slash' : 'eye'} size={18} color={colors.text} />
+                <Text style={[styles.tabText, { color: !isRegister ? '#fff' : colors.text }]}>Login</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.tabButton,
+                  { borderColor: colors.borderColor, backgroundColor: isRegister ? activeTabBackground : 'transparent' },
+                ]}
+                onPress={() => setIsRegister(true)}
+              >
+                <Text style={[styles.tabText, { color: isRegister ? '#fff' : colors.text }]}>Register</Text>
               </TouchableOpacity>
             </View>
 
-            {!isRegister ? (
-              <View style={styles.rememberRow}>
-                <View style={styles.rememberLabelGroup}>
-                  <Text style={[styles.rememberLabel, { color: colors.text }]}>Remember me</Text>
-                  <Text style={[styles.rememberHint, { color: colors.text }]}>Save this account on this device</Text>
-                </View>
-                <Switch
-                  value={rememberMe}
-                  onValueChange={setRememberMe}
-                  trackColor={{ false: colors.borderColor, true: colors.tint }}
-                  thumbColor="#fff"
-                />
-              </View>
-            ) : null}
-          </View>
-
-          {message ? <Text style={[styles.message, { color: colors.tint }]}>{message}</Text> : null}
-
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: '#fff59d', opacity: loading ? 0.7 : 1, borderWidth: 1, borderColor: '#facc15' }]}
-            onPress={handleAuth}
-            disabled={loading}
-          >
-            <Text style={[styles.buttonText, { color: '#1f2937' }]}>{isRegister ? 'Create account' : 'Login'}</Text>
-          </TouchableOpacity>
-
-          {!isRegister ? (
-            <TouchableOpacity onPress={handlePasswordRecovery} style={styles.recoveryButton}>
-              <Text style={[styles.footerLink, { color: colors.tint }]}>Forgot password?</Text>
-            </TouchableOpacity>
-          ) : null}
-
-          {awaitingConfirmation ? (
-            <Text style={[styles.confirmationText, { color: colors.tint }]}>We sent a confirmation email. Please verify your address before logging in.</Text>
-          ) : null}
-
-          <View style={styles.footerRow}>
-            <Text style={[styles.footerText, { color: colors.text, opacity: 0.8 }]}>Need help with your account?</Text>
-            <TouchableOpacity onPress={toggleMode}>
-              <Text style={[styles.footerLink, { color: isRegister ? colors.tint : '#C0B66D' }]}> {isRegister ? 'Sign in instead' : 'Create one'}</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {!isRegister && !selectedAccount && savedAccounts.length > 0 ? (
-          <View style={styles.savedAccountsBlock}>
-            <View style={styles.savedAccountsHeader}>
-              <Text style={[styles.savedAccountsLabel, { color: colors.text }]}>Saved accounts</Text>
-              <Text style={[styles.savedAccountsHint, { color: colors.text }]}>Password required</Text>
-            </View>
-            <View style={styles.savedAccountsList}>
-              {savedAccounts.map(account => (
-                <TouchableOpacity
-                  key={account.email}
-                  activeOpacity={0.78}
-                  onPress={() => {
-                        setSelectedAccount(account);
-                    setEmail(account.email);
-                    setPassword('');
-                    setMessage('');
-                  }}
-                  style={[styles.savedAccountRow, { borderColor: colors.borderColor }]}
-                >
-                  {account.avatarUrl ? (
-                    <Image source={{ uri: account.avatarUrl }} style={styles.savedAccountAvatar} />
+            <View style={styles.form}>
+              {selectedAccount && !isRegister ? (
+                <View style={[styles.selectedAccount, { backgroundColor: colors.background, borderColor: colors.borderColor }]}>
+                  {selectedAccount.avatarUrl ? (
+                    <Image source={{ uri: selectedAccount.avatarUrl }} style={styles.selectedAccountAvatar} />
                   ) : (
-                    <View style={[styles.savedAccountAvatar, styles.savedAccountAvatarFallback, { backgroundColor: colors.tint }]}>
-                      <Text style={styles.savedAccountAvatarText}>{account.email.charAt(0).toUpperCase()}</Text>
+                    <View style={[styles.selectedAccountAvatar, styles.selectedAccountAvatarFallback, { backgroundColor: colors.tint }]}>
+                      <Text style={styles.selectedAccountAvatarText}>{selectedAccount.email.charAt(0).toUpperCase()}</Text>
                     </View>
                   )}
-                  <Text style={[styles.savedAccountEmail, { color: colors.text }]} numberOfLines={1}>{account.email}</Text>
-                      <TouchableOpacity onPress={() => removeSavedAccount(account.email)} hitSlop={8} style={styles.removeSavedAccountButton}>
-                        <FontAwesome name="trash-o" size={15} color={colors.tint} />
-                      </TouchableOpacity>
-                  <FontAwesome name="chevron-right" size={12} color={colors.borderColor} />
+                  <View style={styles.selectedAccountDetails}>
+                    <Text style={[styles.selectedAccountLabel, { color: colors.text }]}>Continue as</Text>
+                    <Text style={[styles.selectedAccountEmail, { color: colors.text }]} numberOfLines={1}>{selectedAccount.email}</Text>
+                  </View>
+                  <TouchableOpacity onPress={() => { setSelectedAccount(null); setEmail(''); setPassword(''); }}>
+                    <Text style={[styles.changeAccountText, { color: colors.tint }]}>Change</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <>
+                  {isRegister ? (
+                    <>
+                      <Text style={[styles.label, { color: colors.text }]}>Username</Text>
+                      <TextInput
+                        style={[styles.input, { backgroundColor: colors.cardBg, color: colors.text, borderColor: colors.borderColor }]}
+                        placeholder="Choose a username"
+                        placeholderTextColor={colors.text + '80'}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        value={username}
+                        onChangeText={setUsername}
+                      />
+                    </>
+                  ) : null}
+                  <Text style={[styles.label, { color: colors.text }]}>Email address</Text>
+                  <TextInput
+                    style={[styles.input, { backgroundColor: colors.cardBg, color: colors.text, borderColor: colors.borderColor }]}
+                    placeholder="you@example.com"
+                    placeholderTextColor={colors.text + '80'}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    value={email}
+                    onChangeText={setEmail}
+                  />
+                </>
+              )}
+
+              <Text style={[styles.label, { color: colors.text }]}>Password</Text>
+              <View style={styles.passwordInputContainer}>
+                <TextInput
+                  style={[styles.input, styles.passwordInput, { backgroundColor: colors.cardBg, color: colors.text, borderColor: colors.borderColor }]}
+                  placeholder="Enter password"
+                  placeholderTextColor={colors.text + '80'}
+                  secureTextEntry={!showPassword}
+                  value={password}
+                  onChangeText={setPassword}
+                />
+                <TouchableOpacity
+                  accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                  accessibilityRole="button"
+                  hitSlop={8}
+                  onPress={() => setShowPassword(current => !current)}
+                  style={styles.passwordVisibilityButton}
+                >
+                  <FontAwesome name={showPassword ? 'eye-slash' : 'eye'} size={18} color={colors.text} />
                 </TouchableOpacity>
-              ))}
+              </View>
+
+              {!isRegister ? (
+                <View style={styles.rememberRow}>
+                  <View style={styles.rememberLabelGroup}>
+                    <Text style={[styles.rememberLabel, { color: colors.text }]}>Remember me</Text>
+                    <Text style={[styles.rememberHint, { color: colors.text }]}>Save this account on this device</Text>
+                  </View>
+                  <Switch
+                    value={rememberMe}
+                    onValueChange={setRememberMe}
+                    trackColor={{ false: colors.borderColor, true: colors.tint }}
+                    thumbColor="#fff"
+                  />
+                </View>
+              ) : null}
+            </View>
+
+            {message ? <Text style={[styles.message, { color: colors.tint }]}>{message}</Text> : null}
+
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: '#fff59d', opacity: loading ? 0.7 : 1, borderWidth: 1, borderColor: '#facc15' }]}
+              onPress={handleAuth}
+              disabled={loading}
+            >
+              <Text style={[styles.buttonText, { color: '#1f2937' }]}>{isRegister ? 'Create account' : 'Login'}</Text>
+            </TouchableOpacity>
+
+            {!isRegister ? (
+              <TouchableOpacity onPress={handlePasswordRecovery} style={styles.recoveryButton}>
+                <Text style={[styles.footerLink, { color: colors.tint }]}>Forgot password?</Text>
+              </TouchableOpacity>
+            ) : null}
+
+            {awaitingConfirmation ? (
+              <Text style={[styles.confirmationText, { color: colors.tint }]}>We sent a confirmation email. Please verify your address before logging in.</Text>
+            ) : null}
+
+            <View style={styles.footerRow}>
+              <Text style={[styles.footerText, { color: colors.text, opacity: 0.8 }]}>Need help with your account?</Text>
+              <TouchableOpacity onPress={toggleMode}>
+                <Text style={[styles.footerLink, { color: isRegister ? colors.tint : '#C0B66D' }]}> {isRegister ? 'Sign in instead' : 'Create one'}</Text>
+              </TouchableOpacity>
             </View>
           </View>
-        ) : null}
-      </View>
+
+          {!isRegister && !selectedAccount && savedAccounts.length > 0 ? (
+            <View style={styles.savedAccountsBlock}>
+              <View style={styles.savedAccountsHeader}>
+                <Text style={[styles.savedAccountsLabel, { color: colors.text }]}>Saved accounts</Text>
+                <Text style={[styles.savedAccountsHint, { color: colors.text }]}>Password required</Text>
+              </View>
+              <View style={styles.savedAccountsList}>
+                {savedAccounts.map(account => (
+                  <TouchableOpacity
+                    key={account.email}
+                    activeOpacity={0.78}
+                    onPress={() => {
+                      setSelectedAccount(account);
+                      setEmail(account.email);
+                      setPassword('');
+                      setMessage('');
+                    }}
+                    style={[styles.savedAccountRow, { borderColor: colors.borderColor }]}
+                  >
+                    {account.avatarUrl ? (
+                      <Image source={{ uri: account.avatarUrl }} style={styles.savedAccountAvatar} />
+                    ) : (
+                      <View style={[styles.savedAccountAvatar, styles.savedAccountAvatarFallback, { backgroundColor: colors.tint }]}>
+                        <Text style={styles.savedAccountAvatarText}>{account.email.charAt(0).toUpperCase()}</Text>
+                      </View>
+                    )}
+                    <Text style={[styles.savedAccountEmail, { color: colors.text }]} numberOfLines={1}>{account.email}</Text>
+                    <TouchableOpacity onPress={() => removeSavedAccount(account.email)} hitSlop={8} style={styles.removeSavedAccountButton}>
+                      <FontAwesome name="trash-o" size={15} color={colors.tint} />
+                    </TouchableOpacity>
+                    <FontAwesome name="chevron-right" size={12} color={colors.borderColor} />
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          ) : null}
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
