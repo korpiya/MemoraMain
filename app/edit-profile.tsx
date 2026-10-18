@@ -66,7 +66,6 @@ export default function EditProfileScreen() {
             id: user.id,
             full_name: trimmedName,
             username: trimmedUsername || null,
-            updated_at: new Date().toISOString(),
           },
           { onConflict: 'id' }
         );

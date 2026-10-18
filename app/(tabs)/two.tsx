@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, ScrollView, TouchableOpacity, Alert, Switch, Linking, Image } from 'react-native';
 import { Text, View } from '@/components/Themed';
-import { supabase } from '../../constants/SupabaseConfig';
-import Colors from '@/constants/Colors';
 import { useColorScheme, useTheme } from '@/components/useColorScheme';
+import Colors from '@/constants/Colors';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { useIsFocused } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect, useState } from 'react';
+import { Alert, Image, Linking, ScrollView, StyleSheet, Switch, TouchableOpacity } from 'react-native';
+import { supabase } from '../../constants/SupabaseConfig';
 
 const SAVED_ACCOUNTS_KEY = '@memora/saved-account-emails';
 
@@ -57,7 +57,6 @@ export default function ProfileScreen() {
                   id: user.id,
                   username,
                   full_name: user.user_metadata?.full_name || user.user_metadata?.name || username,
-                  updated_at: new Date().toISOString(),
                 },
                 { onConflict: 'id' },
               );

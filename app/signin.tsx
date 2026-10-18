@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, Image, Animated, Easing, ScrollView, Switch } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { supabase } from '../constants/SupabaseConfig';
-import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
-import { LinearGradient } from 'expo-linear-gradient';
+import Colors from '@/constants/Colors';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Session } from '@supabase/supabase-js';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, Animated, Easing, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { supabase } from '../constants/SupabaseConfig';
 
 const SAVED_ACCOUNTS_KEY = '@memora/saved-account-emails';
 
@@ -142,7 +142,6 @@ export default function SignInScreen() {
               id: data.user.id,
               username: accountUsername,
               full_name: data.user.user_metadata?.full_name || data.user.user_metadata?.name || accountUsername,
-              updated_at: new Date().toISOString(),
             },
             { onConflict: 'id' },
           );
