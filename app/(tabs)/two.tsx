@@ -39,6 +39,7 @@ export default function ProfileScreen() {
 
       // Get stats for current user only
       if (user) {
+<<<<<<< HEAD
         const { data: profile } = await supabase
           .from('profiles')
           .select('username')
@@ -66,6 +67,8 @@ export default function ProfileScreen() {
           }
         }
 
+=======
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
         const { data: userStories } = await supabase
           .from('stories')
           .select('status')
@@ -190,9 +193,12 @@ export default function ProfileScreen() {
         <Text style={[styles.userName, { color: colors.text }]}>
           {user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || 'User'}
         </Text>
+<<<<<<< HEAD
         {!!user?.user_metadata?.username && (
           <Text style={[styles.userEmail, { color: colors.text, opacity: 0.7, alignSelf: 'center' }]}>@{user.user_metadata.username}</Text>
         )}
+=======
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
         <Text style={[styles.userEmail, { color: colors.text, opacity: 0.7, alignSelf: 'center' }]}> 
           Eranians Archive Member
         </Text>

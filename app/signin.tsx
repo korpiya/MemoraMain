@@ -23,7 +23,10 @@ export default function SignInScreen() {
   const { email: selectedEmail } = useLocalSearchParams<{ email?: string }>();
 
   const [email, setEmail] = useState('');
+<<<<<<< HEAD
   const [username, setUsername] = useState('');
+=======
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -111,28 +114,36 @@ export default function SignInScreen() {
       return;
     }
 
+<<<<<<< HEAD
     const normalizedUsername = username.trim().toLowerCase();
     if (isRegister && !/^[a-z0-9_]{3,20}$/.test(normalizedUsername)) {
       setMessage('Choose a username with 3-20 letters, numbers, or underscores.');
       return;
     }
 
+=======
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
     setLoading(true);
     setMessage('');
     setAwaitingConfirmation(false);
 
     try {
       const authResult = isRegister
+<<<<<<< HEAD
         ? await supabase.auth.signUp({
             email,
             password,
             options: { data: { username: normalizedUsername } },
           })
+=======
+        ? await supabase.auth.signUp({ email, password })
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
         : await supabase.auth.signInWithPassword({ email, password });
 
       const { error, data } = authResult;
       if (error) throw error;
 
+<<<<<<< HEAD
       if (data.session && data.user?.user_metadata?.username) {
         const accountUsername = isRegister ? normalizedUsername : data.user.user_metadata.username;
         const { error: profileError } = await supabase
@@ -149,6 +160,8 @@ export default function SignInScreen() {
         if (profileError) throw profileError;
       }
 
+=======
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
       if (isRegister) {
         if (data?.session) {
           if (rememberMe) {
@@ -293,6 +306,7 @@ export default function SignInScreen() {
               </View>
             ) : (
               <>
+<<<<<<< HEAD
                 {isRegister ? (
                   <>
                     <Text style={[styles.label, { color: colors.text }]}>Username</Text>
@@ -307,6 +321,8 @@ export default function SignInScreen() {
                     />
                   </>
                 ) : null}
+=======
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
                 <Text style={[styles.label, { color: colors.text }]}>Email address</Text>
                 <TextInput
                   style={[styles.input, { backgroundColor: colors.cardBg, color: colors.text, borderColor: colors.borderColor }]}

@@ -1,6 +1,7 @@
 import { Text, View } from '@/components/Themed';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
+<<<<<<< HEAD
 import { supabase } from '@/constants/SupabaseConfig';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
@@ -11,10 +12,14 @@ type FriendProfile = {
   full_name: string | null;
   avatar_url: string | null;
 };
+=======
+import { StyleSheet } from 'react-native';
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
 
 export default function FriendsScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+<<<<<<< HEAD
   const [userId, setUserId] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<FriendProfile[]>([]);
@@ -120,10 +125,13 @@ export default function FriendsScreen() {
       </View>
     );
   }
+=======
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}> 
       <Text style={[styles.title, { color: colors.text }]}>Friends</Text>
+<<<<<<< HEAD
       <TextInput
         value={query}
         onChangeText={setQuery}
@@ -161,6 +169,9 @@ export default function FriendsScreen() {
           )}
         </>
       )}
+=======
+      <Text style={[styles.subtitle, { color: colors.text }]}>Your friends list will appear here.</Text>
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
     </View>
   );
 }
@@ -168,11 +179,17 @@ export default function FriendsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+<<<<<<< HEAD
     padding: 20,
+=======
+    padding: 24,
+    justifyContent: 'center',
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
   },
   title: {
     fontSize: 24,
     fontWeight: '700',
+<<<<<<< HEAD
     marginBottom: 16,
   },
   searchInput: {
@@ -236,5 +253,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     opacity: 0.7,
     paddingVertical: 18,
+=======
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    opacity: 0.75,
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
   },
 });

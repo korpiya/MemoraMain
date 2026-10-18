@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Text, View } from '@/components/Themed';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
@@ -10,13 +11,30 @@ import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, Image, ScrollView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { AVATAR_BUCKET, supabase } from '../constants/SupabaseConfig';
+=======
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, TouchableOpacity, Alert, ScrollView, Image, TextInput } from 'react-native';
+import { Text, View } from '@/components/Themed';
+import { supabase, AVATAR_BUCKET } from '../constants/SupabaseConfig';
+import Colors from '@/constants/Colors';
+import { useColorScheme } from '@/components/useColorScheme';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { LinearGradient } from 'expo-linear-gradient';
+import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system/legacy';
+import { decode } from 'base64-arraybuffer';
+import { useRouter } from 'expo-router';
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
 
 export default function EditProfileScreen() {
   const colorScheme = useColorScheme();
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [name, setName] = useState('');
+<<<<<<< HEAD
   const [username, setUsername] = useState('');
+=======
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -29,6 +47,7 @@ export default function EditProfileScreen() {
     setUser(user);
     setName(user?.user_metadata?.full_name || user?.user_metadata?.name || '');
     setAvatarUrl(user?.user_metadata?.avatar_url || null);
+<<<<<<< HEAD
     if (user) {
       const { data: profile } = await supabase
         .from('profiles')
@@ -37,17 +56,23 @@ export default function EditProfileScreen() {
         .maybeSingle();
       setUsername(profile?.username || user.user_metadata?.username || '');
     }
+=======
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
   }
 
   const saveProfile = async () => {
     if (!user) return;
 
     const trimmedName = name.trim();
+<<<<<<< HEAD
     const trimmedUsername = username.trim().toLowerCase();
+=======
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
     if (!trimmedName) {
       Alert.alert('Missing name', 'Please enter your name before saving.');
       return;
     }
+<<<<<<< HEAD
     if (trimmedUsername && !/^[a-z0-9_]{3,20}$/.test(trimmedUsername)) {
       Alert.alert('Invalid username', 'Use 3-20 letters, numbers, or underscores.');
       return;
@@ -55,18 +80,36 @@ export default function EditProfileScreen() {
 
     setLoading(true);
     try {
+=======
+
+    setLoading(true);
+    try {
+      const { error: authError } = await supabase.auth.updateUser({
+        data: {
+          full_name: trimmedName,
+          name: trimmedName,
+        },
+      });
+
+      if (authError) throw authError;
+
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
       const { error: profileError } = await supabase
         .from('profiles')
         .upsert(
           {
             id: user.id,
             full_name: trimmedName,
+<<<<<<< HEAD
             username: trimmedUsername || null,
+=======
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
             updated_at: new Date().toISOString(),
           },
           { onConflict: 'id' }
         );
 
+<<<<<<< HEAD
       if (profileError) throw profileError;
 
       const { error: authError } = await supabase.auth.updateUser({
@@ -78,6 +121,11 @@ export default function EditProfileScreen() {
       });
 
       if (authError) throw authError;
+=======
+      if (profileError) {
+        console.warn('Profile update warning:', profileError.message);
+      }
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
 
       setUser((prev: any) => ({
         ...prev,
@@ -85,7 +133,10 @@ export default function EditProfileScreen() {
           ...(prev?.user_metadata || {}),
           full_name: trimmedName,
           name: trimmedName,
+<<<<<<< HEAD
           username: trimmedUsername,
+=======
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
         },
       }));
 
@@ -253,6 +304,7 @@ export default function EditProfileScreen() {
           </View>
 
           <View style={styles.infoSection}>
+<<<<<<< HEAD
             <Text style={[styles.label, { color: colors.text }]}>Username</Text>
             <TextInput
               value={username}
@@ -274,6 +326,8 @@ export default function EditProfileScreen() {
           </View>
 
           <View style={styles.infoSection}>
+=======
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
             <Text style={[styles.label, { color: colors.text }]}>Email</Text>
             <Text style={[styles.value, { color: colors.text, opacity: 0.7 }]}>
               {user?.email}
@@ -354,11 +408,14 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 16,
   },
+<<<<<<< HEAD
   usernameHint: {
     fontSize: 13,
     opacity: 0.7,
     marginTop: 6,
   },
+=======
+>>>>>>> cd14a7d6a600dd6e4bac55cf4f2e21ddd12a53ce
   saveButton: {
     marginHorizontal: 20,
     marginBottom: 40,
