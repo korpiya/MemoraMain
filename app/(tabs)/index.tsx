@@ -3,17 +3,70 @@ import Colors from '@/constants/Colors';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useIsFocused } from '@react-navigation/native';
 import { Audio, ResizeMode, Video } from 'expo-av';
+import { fetch as expoFetch } from 'expo/fetch';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Image, RefreshControl, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { subscribeToAudioPlayback, toggleAudioPlayback } from '../../constants/audioPlayback';
-import { supabase } from '../../constants/SupabaseConfig';
+import { supabase, supabaseAnonKey, supabaseUrl } from '../../constants/SupabaseConfig';
 
 const isVideoUrl = (url?: string | null) => {
   if (!url) return false;
   const lower = url.toLowerCase();
   return lower.endsWith('.mp4') || lower.endsWith('.mov') || lower.endsWith('.m4v') || lower.endsWith('.webm') || lower.includes('video');
+};
+
+const readGeminiStream = async (response: Response, onAnswer: (answer: string) => void) => {
+  const reader = response.body?.getReader();
+  if (!reader) {
+    throw new Error('Streaming is not supported by this device.');
+  }
+
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let answer = '';
+
+  const processEvent = (event: string) => {
+    const data = event
+      .split(/\r?\n/)
+      .filter((line) => line.startsWith('data:'))
+      .map((line) => line.slice(5).trimStart())
+      .join('\n');
+
+    if (!data || data === '[DONE]') return;
+
+    const chunk: {
+      candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+    } = JSON.parse(data);
+    const text = chunk.candidates?.[0]?.content?.parts
+      ?.map((part) => part.text ?? '')
+      .join('');
+
+    if (text) {
+      answer += text;
+      onAnswer(answer);
+    }
+  };
+
+  const consumeEvents = () => {
+    const eventBoundary = /\r?\n\r?\n/;
+    let boundary: RegExpExecArray | null;
+    while ((boundary = eventBoundary.exec(buffer)) !== null) {
+      processEvent(buffer.slice(0, boundary.index));
+      buffer = buffer.slice(boundary.index + boundary[0].length);
+    }
+  };
+
+  while (true) {
+    const { done, value } = await reader.read();
+    buffer += decoder.decode(value, { stream: !done });
+    consumeEvents();
+    if (done) break;
+  }
+  if (buffer.trim()) processEvent(buffer);
+
+  return answer.trim();
 };
 
 interface Story {
@@ -141,25 +194,48 @@ export default function TabOneScreen() {
     setAiResponse('');
     setAiLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('groq-chat', {
-        body: {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+      if (!session) throw new Error('Please sign in again to use Gemini.');
+
+      const response = await expoFetch(`${supabaseUrl}/functions/v1/gemini-chat`, {
+        method: 'POST',
+        headers: {
+          Accept: 'text/event-stream',
+          Authorization: `Bearer ${session.access_token}`,
+          apikey: supabaseAnonKey,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           question: trimmedQuestion,
-          memories: stories.slice(0, 20).map(({ title, description, created_at }) => ({
+          memories: stories.slice(0, 5).map(({ title, description, created_at }) => ({
             title,
-            description: description.slice(0, 1000),
+            description: description.slice(0, 500),
             created_at,
           })),
-        },
+        }),
       });
 
-      if (error) throw error;
-      if (typeof data?.answer !== 'string' || !data.answer.trim()) {
-        throw new Error('Gemini returned an empty response. Please try again.');
+      if (!response.ok) {
+        const errorBody = await response.text();
+        let message = `The chat function failed with status ${response.status}.`;
+        if (errorBody) {
+          try {
+            const result: { error?: unknown } = JSON.parse(errorBody);
+            if (typeof result.error === 'string') message = result.error;
+          } catch {
+            message = errorBody;
+          }
+        }
+        throw new Error(message);
       }
-      setAiResponse(data.answer.trim());
+
+      const answer = await readGeminiStream(response, setAiResponse);
+      if (!answer) throw new Error('Gemini returned an empty response. Please try again.');
     } catch (error) {
       console.error('Gemini request failed:', error);
-      Alert.alert('Gemini unavailable', 'Could not get a response. Check your connection and try again.');
+      let message = error instanceof Error ? error.message : 'An unexpected error occurred.';
+      Alert.alert('Gemini unavailable', message);
     } finally {
       setAiLoading(false);
     }
