@@ -193,6 +193,8 @@ export default function TabOneScreen() {
 
     setAiResponse('');
     setAiLoading(true);
+    const requestController = new AbortController();
+    const requestTimeout = setTimeout(() => requestController.abort(), 30_000);
     try {
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       if (sessionError) throw sessionError;
@@ -206,8 +208,10 @@ export default function TabOneScreen() {
           apikey: supabaseAnonKey,
           'Content-Type': 'application/json',
         },
+        signal: requestController.signal,
         body: JSON.stringify({
           question: trimmedQuestion,
+          memoryCount: stories.length,
           memories: stories.slice(0, 5).map(({ title, description, created_at }) => ({
             title,
             description: description.slice(0, 500),
@@ -234,9 +238,14 @@ export default function TabOneScreen() {
       if (!answer) throw new Error('Gemini returned an empty response. Please try again.');
     } catch (error) {
       console.error('Gemini request failed:', error);
-      let message = error instanceof Error ? error.message : 'An unexpected error occurred.';
+      const message = error instanceof Error && error.name === 'AbortError'
+        ? 'Gemini took too long to respond. Please check your connection and try again.'
+        : error instanceof Error
+          ? error.message
+          : 'An unexpected error occurred.';
       Alert.alert('Gemini unavailable', message);
     } finally {
+      clearTimeout(requestTimeout);
       setAiLoading(false);
     }
   };
@@ -284,7 +293,7 @@ export default function TabOneScreen() {
           </TouchableOpacity>
           {aiResponse ? (
             <View style={[styles.aiResponseContainer, { backgroundColor: colorScheme === 'dark' ? '#111827' : '#f8fafc', borderColor: colors.borderColor }]}> 
-              <Text style={[styles.aiResponseTitle, { color: colors.text }]}>Gemini Answer</Text>
+              <Text style={[styles.aiResponseTitle, { color: colors.text }]}>Answer</Text>
               <Text style={[styles.aiResponseText, { color: colors.text }]}>{aiResponse}</Text>
             </View>
           ) : null}
